@@ -7,9 +7,11 @@ import argparse
 import base64
 import urllib
 import time
+from colorama import init,Fore,Back,Style
 
 reload(sys) 
 sys.setdefaultencoding('utf-8')
+init(autoreset=True)
 
 config = open('config.txt','r')
 header = {
@@ -51,17 +53,23 @@ def pn_count(url):
     return pn
 
 
+
 def run(text):
     if args.out:
         for i in range(len(text[0])):
-            result=("URL：{:<43}".format(text[0][i])+"\tIP：{:<15}".format(text[1][i])+"\ttitle：{:<20}".format(text[2][i]))
-            print(result.encode("GBK","ignore"))
+            if u"后台" in text[2][i] or u"系统" in text[2][i] or u"管理" in text[2][i] or u"平台" in text[2][i]:
+                print(('\033[1;32;40m{}\033[0m'.format(result)).encode("GBK","ignore"))
+            else:
+                print(result.encode("GBK","ignore"))
             args.out.write(result+"\n")
     else:
         for i in range(len(text[0])):
             #print("URL："+text[0][i]+"\tIP："+text[1][i]+"\ttitle："+text[2][i]+"\t城市："+text[3][i]+text[4][i])
             result=("URL：{:<43}".format(text[0][i])+"\tIP：{:<20}".format(text[1][i])+"\ttitle：{:<20}".format(text[2][i]))
-            print(result.encode("GBK","ignore"))
+            if u"后台" in text[2][i] or u"系统" in text[2][i] or u"管理" in text[2][i] or u"平台" in text[2][i]:
+                print(('\033[1;32;40m{}\033[0m'.format(result)).encode("GBK","ignore"))
+            else:
+                print(result.encode("GBK","ignore"))
 
 
 def C_ip(ip_list):
@@ -145,7 +153,6 @@ def main():
                 run(text)
                 text1_list.extend(text[1])
             C_ip(text1_list)
-
 
 if __name__ == "__main__":
     main()
