@@ -27,8 +27,17 @@ def parser(text):
 
 
 def request(url):
-    text = requests.get(url,headers=header).text
-    return text
+    try:
+        text = requests.get(url,headers=header).text
+        return text
+    except requests.exceptions.ConnectTimeout as a:
+        print(a)
+    except requests.exceptions.ProxyError as b:
+        print(b)
+    except requests.exceptions.ConnectTimeout as c:
+        print(c)
+    except requests.exceptions.ConnectionError as d:
+        print(d)
 
 
 def pn_count(url):
@@ -55,6 +64,25 @@ def run(text):
             print(result.encode("GBK","ignore"))
 
 
+def C_ip(ip_list):
+    print(u"\n*************************************************************\n")
+    c_dict={}
+    for ip in ip_list:
+        try:
+            c = re.findall('((?:\d*\.){2}(?:\d)*)',ip)
+            c_y = c[0]
+            if not c_dict.has_key(c_y):
+                c_dict[c_y] = 1
+            else:
+                c_dict[c_y] +=1
+        except:
+            continue
+    print(u"您搜索的结果共包含{}个C段IP，统计结果如下：\n".format(len(c_dict)))
+    c_dict=sorted(c_dict.items(), key=lambda item:item[1], reverse=True)
+    for i in range(len(c_dict)):
+        print(U"C段：{}.0/24\t{}条数据在此C段中".format(c_dict[i][0],c_dict[i][1]))
+
+
 
 def argument():
     parser = argparse.ArgumentParser(prog='HGather', description='资产收集工具——HGather by 白泽Sec-ahui')
@@ -66,6 +94,20 @@ def argument():
     args = parser.parse_args()
 
 
+def check(pn_number):
+    if pn_number == 0:
+        print(u"您搜索的结果返回为空，请检查您的参数是否正确！")
+        sys.exit()
+    else:
+        print(u"您搜索的结果共有{}页。".format(pn_number))
+        time.sleep(2)
+
+
+def check_cookie(request_result):
+    if u"资源访问权限不足" in request_result:
+        print(u"您的COOKIE已失效，只能输出前两页内容，请更新您的配置文件！")
+        sys.exit()
+
 
 def main():
     argument()
@@ -75,10 +117,16 @@ def main():
         qbase64 = urllib.quote(args.qbase64)
         url = api+"?qbase64="+qbase64
         pn_number = pn_count(url)
+        check(pn_number)
+        text1_list=[]
         for i in range(pn_number):
             url_y = url + "&pn=" + str(i)
-            text = parser(request(url_y))
+            request_result=request(url_y)
+            check_cookie(request_result)
+            text = parser(request_result)
             run(text)
+            text1_list.extend(text[1])
+        C_ip(text1_list)
     if args.ip:
         if not re.match('(?:[0-9]{1,3}\.){3}(?:[0-9]){1,3}(?:\/\d*)?', args.ip):
             print(u"您输入的IP或IP段有误！")
@@ -87,11 +135,16 @@ def main():
             qbase64 = urllib.quote(base64.b64encode(query))
             url = api+"?qbase64="+qbase64
             pn_number = pn_count(url)
-            print(pn_number)
+            check(pn_number)
+            text1_list=[]
             for i in range(pn_number):
                 url_y = url + "&pn=" + str(i)
-                text = parser(request(url_y))
+                request_result=request(url_y)
+                check_cookie(request_result)
+                text = parser(request_result)
                 run(text)
+                text1_list.extend(text[1])
+            C_ip(text1_list)
 
 
 if __name__ == "__main__":
