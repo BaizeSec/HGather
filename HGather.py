@@ -57,6 +57,7 @@ def pn_count(url):
 def run(text):
     if args.out:
         for i in range(len(text[0])):
+            result=("URL：{:<43}".format(text[0][i])+"\tIP：{:<20}".format(text[1][i])+"\ttitle：{:<20}".format(text[2][i]))
             if u"后台" in text[2][i] or u"系统" in text[2][i] or u"管理" in text[2][i] or u"平台" in text[2][i]:
                 print(('\033[1;32;40m{}\033[0m'.format(result)).encode("GBK","ignore"))
             else:
