@@ -14,8 +14,9 @@ sys.setdefaultencoding('utf-8')
 init(autoreset=True)
 
 config = open('config.txt','r')
+cookie_config=config.readline().strip()
 header = {
-        'Authorization':config.readline()
+        'Authorization':cookie_config
     }
 api=('https://api.fofa.so/v1/search')
 
