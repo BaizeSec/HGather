@@ -24,35 +24,32 @@
 
 ```
   -h, --help            show this help message and exit
-  -q QBASE64, --qbase64 QBASE64
-                        指定FOFA中的搜索条件（base64编码）
+  -q QUERY STRING, --qstr QUERY STRING
+                        指定FOFA中的搜索条件，必须符合fofa语法(语句中不用带引号，fofa语句中有空格则需要用引号包裹q参数)
   -i IP, --ip IP        指定要搜索的IP或IP段，例如：-i 192.168.0.1/24
   -o OUT, --out OUT     指定要导出的文件名，例如：-o test.txt
 ```
 
 ##### Example Usages：
 
-**将符合FOFA语法的语句进行base64编码即可：**
+**将符合FOFA语法的语句输入即可：**
 
 ```
-domain="tencent.com" base64-> ZG9tYWluPSJ0ZW5jZW50LmNvbSI=
-title="腾讯" base64-> dGl0bGU9In6vIg==
-
-python2 hgather.py -q ZG9tYWluPSJ0ZW5jZW50LmNvbSI=
-python2 hgather.py -q ZG9tYWluPSJ0ZW5jZW50LmNvbSI= -o result.txt
+python2 HGather.py -q title=腾讯
+python2 HGather.py -q domain=tencent.com -o result.txt
+python2 HGather.py -q "domain=tencent.com && is_domain=true"
 ```
 
 **直接指定IP或IP段：**
 
 ```
-python2 hgather.py -i 220.181.111.113
-python2 hgather.py -i 220.181.111.113/16
-python2 hgather.py -i 220.181.111.113/24 -o result.txt
+python2 HGather.py -i 220.181.111.113
+python2 HGather.py -i 220.181.111.113/16
+python2 HGather.py -i 220.181.111.113/24 -o result.txt
 ```
 
 执行结果图如下：
 
-![image-20210804201958147](README/image-20210804201958147.png)
+![image-20211014163404740](README/image-20211014163404740.png)
 
-![image-20210805113514598](README/image-20210805113514598.png)
-=======
+![image-20211014164447843](README/image-20211014164447843.png)
