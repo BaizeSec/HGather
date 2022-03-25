@@ -18,7 +18,7 @@ cookie_config=config.readline().strip()
 header = {
         'Authorization':cookie_config
     }
-api=('https://api.fofa.so/v1/search')
+api=('https://api.fofa.info/v1/search')
 
 def parser(text):
     url_list=re.findall('"link":"(.*?)"', text)
@@ -57,7 +57,7 @@ def pn_count(url):
 def export(text):
     for i in range(len(text[0])):
         result=("URL：{:<43}".format(text[0][i])+"\tIP：{:<20}".format(text[1][i])+"\ttitle：{:<20}".format(text[2][i]))
-        if u"后台" in text[2][i] or u"系统" in text[2][i] or u"管理" in text[2][i] or u"平台" in text[2][i] or u"登录" in text[2][i] or u"运维" in text[2][i]:
+        if u"后台" in text[2][i] or u"系统" in text[2][i] or u"管理" in text[2][i] or u"平台" in text[2][i] or u"登录" in text[2][i] or u"运维" in text[2][i] or "login" in text[2][i] or "manage" in text[2][i] or "test" in text[2][i] or "system" in text[2][i]:
             print(('\033[1;32;40m{}\033[0m'.format(result)).encode("GBK","ignore"))
         else:
             print(result.encode("GBK","ignore"))
@@ -101,22 +101,23 @@ def check(pn_number):
         sys.exit()
     else:
         print(u"您搜索的结果共有{}页。".format(pn_number))
-        time.sleep(2)
+        time.sleep(1)
 
 
 def check_cookie(request_result):
-    if u"资源访问权限不足" in request_result:
-        print(u"您的COOKIE已失效，只能输出前两页内容，请更新您的配置文件！")
+    if u"访问权限不足" in request_result:
+        print(u"您的COOKIE已失效，请重新登录获取COOKIE并更新您的配置文件！")
         sys.exit()
 
 def run(url):
+    test_cookie=request(url)
+    check_cookie(test_cookie)
     pn_number = pn_count(url)
     check(pn_number)
     text1_list=[]
     for i in range(pn_number):
         url_y = url + "&pn=" + str(i)
         request_result=request(url_y)
-        check_cookie(request_result)
         text = parser(request_result)
         export(text)
         text1_list.extend(text[1])
@@ -129,7 +130,7 @@ def main():
     if args.qstr:
         qbase64 = base64.b64encode(args.qstr.decode('gbk').encode('utf-8'))
         qbase64 = urllib.quote(qbase64)
-        url = api+"?qbase64="+qbase64
+        url = api+"?qbase64="+qbase64+"&ps=20"
         run(url)
     if args.ip:
         if not re.match('(?:[0-9]{1,3}\.){3}(?:[0-9]){1,3}(?:\/\d*)?', args.ip):
@@ -137,7 +138,7 @@ def main():
         else:
             query = 'ip="{}" && type="subdomain"'.format(args.ip)
             qbase64 = urllib.quote(base64.b64encode(query))
-            url = api+"?qbase64="+qbase64
+            url = api+"?qbase64="+qbase64+"&ps=20"
             run(url)
 
 if __name__ == "__main__":
